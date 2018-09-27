@@ -1,0 +1,24 @@
+﻿  HelloSDL.cpp
+c:\users\aortiz\desktop\actividadestdlp\actividades\src\hellosdl\hellosdl.cpp(65): warning C4244: 'argument': conversion from 'float' to 'Uint8', possible loss of data
+c:\users\aortiz\desktop\actividadestdlp\actividades\src\hellosdl\hellosdl.cpp(44): warning C4297: 'SDL_main': function assumed not to throw an exception but does
+  c:\users\aortiz\desktop\actividadestdlp\actividades\src\hellosdl\hellosdl.cpp(44): note: __declspec(nothrow), throw(), noexcept(true), or noexcept was specified on the function
+  LINK : C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\bin\Win32Debug\HelloSDL.exe not found or not built by the last incremental link; performing full link
+  HelloSDL.vcxproj -> C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\bin\Win32Debug\HelloSDL.exe
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\libFLAC-8.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\libfreetype-6.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\libjpeg-9.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\libmodplug-1.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\libogg-0.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\libpng16-16.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\libtiff-5.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\libvorbis-0.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\libvorbisfile-3.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\libwebp-4.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\SDL2.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\SDL2_image.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\SDL2_mixer.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\SDL2_net.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\SDL2_ttf.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\smpeg2.dll
+  C:\Users\aortiz\Desktop\ActividadesTdlP\Actividades\\dep\dll\x86\zlib1.dll
+  17 File(s) copied

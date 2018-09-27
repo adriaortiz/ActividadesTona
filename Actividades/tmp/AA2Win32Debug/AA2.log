@@ -1,0 +1,13 @@
+﻿  Main.cpp
+c:\users\aortiz\desktop\actividadestona\actividades\src\aa2\main.cpp(16): warning C4297: 'SDL_main': function assumed not to throw an exception but does
+  c:\users\aortiz\desktop\actividadestona\actividades\src\aa2\main.cpp(16): note: __declspec(nothrow), throw(), noexcept(true), or noexcept was specified on the function
+c:\users\aortiz\desktop\actividadestona\actividades\src\aa2\main.cpp(21): warning C4297: 'SDL_main': function assumed not to throw an exception but does
+  c:\users\aortiz\desktop\actividadestona\actividades\src\aa2\main.cpp(21): note: __declspec(nothrow), throw(), noexcept(true), or noexcept was specified on the function
+c:\users\aortiz\desktop\actividadestona\actividades\src\aa2\main.cpp(26): warning C4297: 'SDL_main': function assumed not to throw an exception but does
+  c:\users\aortiz\desktop\actividadestona\actividades\src\aa2\main.cpp(26): note: __declspec(nothrow), throw(), noexcept(true), or noexcept was specified on the function
+c:\users\aortiz\desktop\actividadestona\actividades\src\aa2\main.cpp(30): warning C4297: 'SDL_main': function assumed not to throw an exception but does
+  c:\users\aortiz\desktop\actividadestona\actividades\src\aa2\main.cpp(30): note: __declspec(nothrow), throw(), noexcept(true), or noexcept was specified on the function
+c:\users\aortiz\desktop\actividadestona\actividades\src\aa2\main.cpp(38): warning C4297: 'SDL_main': function assumed not to throw an exception but does
+  c:\users\aortiz\desktop\actividadestona\actividades\src\aa2\main.cpp(38): note: __declspec(nothrow), throw(), noexcept(true), or noexcept was specified on the function
+  AA2.vcxproj -> C:\Users\aortiz\Desktop\ActividadesTona\Actividades\\bin\Win32Debug\AA2.exe
+  0 File(s) copied
