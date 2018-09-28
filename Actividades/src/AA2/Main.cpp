@@ -48,18 +48,39 @@ int main(int, char*[])
 		SDL_Rect playerTarget{ 0,0,100,100};
 	// --- TEXT ---
 		//No val la pena fer servir aixo en temps real (carregar les imatges no, pero mostrarles o no, es pot fer)
-		TTF_Font *font{ TTF_OpenFont("../../res/ttf/saiyan.ttf",70) };					//Obrir la font amb el tamany
-		if (font == nullptr) throw "No es pot inicialitzar TTF_Font";
-		SDL_Surface *tmpSurf{ TTF_RenderText_Blended(font,"My first SDL game", SDL_Color{255,150,0,255}) };		//Variable per la font a carregar, el text i el color 
-		if (tmpSurf == nullptr) throw "Unable to create the SDL teach";
-		SDL_Texture *textTexture{SDL_CreateTextureFromSurface(m_renderer, tmpSurf)};
-		SDL_Rect textRect{100,50,tmpSurf->w, tmpSurf->h };									//
-		SDL_FreeSurface(tmpSurf);															//Amb la surface alliberada, podem aprofitar la mateixa Surface per fer un altre text i no fer mes variables
-		TTF_CloseFont(font);
+		//Play
+		TTF_Font *fontPlay{ TTF_OpenFont("../../res/ttf/saiyan.ttf",70) };					//Obrir la font amb el tamany
+		if (fontPlay == nullptr) throw "No es pot inicialitzar TTF_Font";
+		SDL_Surface *tmpSurfPlay{ TTF_RenderText_Blended(fontPlay,"Play", SDL_Color{255,150,0,255}) };		//Variable per la font a carregar, el text i el color 
+		if (tmpSurfPlay == nullptr) throw "Unable to create the SDL teach";
+		SDL_Texture *textTexturePlay{SDL_CreateTextureFromSurface(m_renderer, tmpSurfPlay)};
+		SDL_Rect textRectPlay{100,50,tmpSurfPlay->w, tmpSurfPlay->h };									//
+		SDL_FreeSurface(tmpSurfPlay);															//Amb la surface alliberada, podem aprofitar la mateixa Surface per fer un altre text i no fer mes variables
+		TTF_CloseFont(fontPlay);
+
+		//Sound off
+		TTF_Font *fontSoundOff{ TTF_OpenFont("../../res/ttf/saiyan.ttf",70) };					//Obrir la font amb el tamany
+		if (fontSoundOff == nullptr) throw "No es pot inicialitzar TTF_Font";
+		SDL_Surface *tmpSurfSoundOff{ TTF_RenderText_Blended(fontSoundOff,"Sound off", SDL_Color{ 255,150,0,255 }) };
+		if (tmpSurfSoundOff == nullptr) throw "Unable to create the SDL teach";
+		SDL_Texture *textTextureSoundOff{ SDL_CreateTextureFromSurface(m_renderer, tmpSurfSoundOff) };
+		SDL_Rect textRectSoundOff{ 100,150,tmpSurfSoundOff->w, tmpSurfSoundOff->h };									//
+		SDL_FreeSurface(tmpSurfSoundOff);															//Superficie alliberada 
+		TTF_CloseFont(fontSoundOff);
+
+		//Exit
+		TTF_Font *fontExit{ TTF_OpenFont("../../res/ttf/saiyan.ttf",70) };					//Obrir la font amb el tamany
+		if (fontExit == nullptr) throw "No es pot inicialitzar TTF_Font";
+		SDL_Surface *tmpSurfExit{ TTF_RenderText_Blended(fontExit,"Exit", SDL_Color{ 255,150,0,255 }) };
+		if (tmpSurfExit == nullptr) throw "Unable to create the SDL teach";
+		SDL_Texture *textTextureExit{ SDL_CreateTextureFromSurface(m_renderer, tmpSurfExit) };
+		SDL_Rect textRectExit{ 100,250,tmpSurfExit->w, tmpSurfExit->h };									//
+		SDL_FreeSurface(tmpSurfExit);															//Superficie alliberada 
+		TTF_CloseFont(fontExit);
 
 		//Hover
-		tmpSurf = { TTF_RenderText_Blended(font, "My first SDL game", SDL_Color{100,201,170,255 })};
-		SDL_Texture *textTexture2{ SDL_CreateTextureFromSurface(m_renderer, tmpSurf) };
+		//tmpSurfPlay = { TTF_RenderText_Blended(fontPlay, "My first SDL game", SDL_Color{100,201,170,255 })};
+		//SDL_Texture *textTexture2{ SDL_CreateTextureFromSurface(m_renderer, tmpSurf) };
 
 	// --- AUDIO ---
 
@@ -100,10 +121,14 @@ int main(int, char*[])
 			SDL_RenderCopy(m_renderer, bgTexture, nullptr, &bgRect);
 			//Player Cursor 
 			SDL_RenderCopy(m_renderer, playerTexture, nullptr, &playerRect);
-			//Text
-			SDL_RenderCopy(m_renderer,textTexture,nullptr,&textRect);
+			//Text Play
+			SDL_RenderCopy(m_renderer,textTexturePlay,nullptr,&textRectPlay);
+			//Text Sound off
+			SDL_RenderCopy(m_renderer, textTextureSoundOff, nullptr, &textRectSoundOff);
+			//Text Exit
+			SDL_RenderCopy(m_renderer, textTextureExit, nullptr, &textRectExit);
 			//Hover
-			SDL_RenderCopy(m_renderer, textTexture2, nullptr, &textRect);
+			//SDL_RenderCopy(m_renderer, textTexture2, nullptr, &textRectPlay);
 
 		SDL_RenderPresent(m_renderer);
 
@@ -112,8 +137,10 @@ int main(int, char*[])
 	// --- DESTROY ---
 	SDL_DestroyTexture(bgTexture);															//Destruim imatges
 	SDL_DestroyTexture(playerTexture);
-	SDL_DestroyTexture(textTexture);
-	SDL_DestroyTexture(textTexture2);
+	SDL_DestroyTexture(textTexturePlay);
+	//SDL_DestroyTexture(textTexture2);
+	SDL_DestroyTexture(textTextureSoundOff);
+	SDL_DestroyTexture(textTextureExit);
 	IMG_Quit();
 	TTF_Quit();
 	SDL_DestroyRenderer(m_renderer);														//Destruim el render

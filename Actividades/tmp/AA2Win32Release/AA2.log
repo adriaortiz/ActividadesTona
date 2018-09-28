@@ -1,0 +1,20 @@
+﻿  Main.cpp
+f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(17): warning C4297: 'SDL_main': se suponía que la función no producía una excepción, pero lo hace
+  f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(17): note: __declspec(nothrow), throw(), noexcept(true) o noexcept se han especificado en la función
+f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(22): warning C4297: 'SDL_main': se suponía que la función no producía una excepción, pero lo hace
+  f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(22): note: __declspec(nothrow), throw(), noexcept(true) o noexcept se han especificado en la función
+f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(27): warning C4297: 'SDL_main': se suponía que la función no producía una excepción, pero lo hace
+  f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(27): note: __declspec(nothrow), throw(), noexcept(true) o noexcept se han especificado en la función
+f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(31): warning C4297: 'SDL_main': se suponía que la función no producía una excepción, pero lo hace
+  f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(31): note: __declspec(nothrow), throw(), noexcept(true) o noexcept se han especificado en la función
+f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(34): warning C4297: 'SDL_main': se suponía que la función no producía una excepción, pero lo hace
+  f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(34): note: __declspec(nothrow), throw(), noexcept(true) o noexcept se han especificado en la función
+f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(40): warning C4297: 'SDL_main': se suponía que la función no producía una excepción, pero lo hace
+  f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(40): note: __declspec(nothrow), throw(), noexcept(true) o noexcept se han especificado en la función
+f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(45): warning C4297: 'SDL_main': se suponía que la función no producía una excepción, pero lo hace
+  f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(45): note: __declspec(nothrow), throw(), noexcept(true) o noexcept se han especificado en la función
+f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(52): warning C4297: 'SDL_main': se suponía que la función no producía una excepción, pero lo hace
+  f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(52): note: __declspec(nothrow), throw(), noexcept(true) o noexcept se han especificado en la función
+f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(54): warning C4297: 'SDL_main': se suponía que la función no producía una excepción, pero lo hace
+  f:\2n grado\tecnologia_r\actividadestona\actividades\src\aa2\main.cpp(54): note: __declspec(nothrow), throw(), noexcept(true) o noexcept se han especificado en la función
+LINK : fatal error LNK1181: no se puede abrir el archivo de entrada 'SDL2.lib'
