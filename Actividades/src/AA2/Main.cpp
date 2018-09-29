@@ -1,6 +1,7 @@
 #include "../../dep/inc/SDL.h"					// Always needs to be included for an SDL app
 #include "../../dep/inc/SDL_image.h"
 #include "../../dep/inc/SDL_ttf.h"
+#include "../../dep/inc/SDL_mixer.h"
 
 #include <exception>
 #include <iostream>
@@ -26,13 +27,20 @@ int main(int, char*[])
 	if (m_renderer == nullptr) 
 		throw "No es pot inicialitzar SDL_Renderer";
 
+	// --- AUDIO RENDER ---
+	if (SDL_Init(SDL_INIT_AUDIO) != 0)
+		throw "No es pot inicialitzar SDL audio";
+
 	//-->SDL_Image 
 	const Uint8 imgFlags{ IMG_INIT_PNG | IMG_INIT_JPG };
 	if (!(IMG_Init(imgFlags) & imgFlags)) throw "Error: SDL_image init";
 
 	//-->SDL_TTF
-	if (TTF_Init() != 0) throw "No es pot inicialitzar SDL_ttf";							//Throw de la font de lletra 
+	if (TTF_Init() != 0) throw "No es pot inicialitzar SDL_ttf";							//Throw de la font de lletra pero... bastant inutil aqui 
+
 	//-->SDL_Mix
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);										//SDL Mixer esta inicialitzat
+
 
 	// --- SPRITES ---
 		//Background
@@ -98,25 +106,30 @@ int main(int, char*[])
 		TTF_CloseFont(fontExit);
 
 		//Exit Hover
-		TTF_Font *fontExitHover{ TTF_OpenFont("../../res/ttf/saiyan.ttf",70) };					//Obrir la font amb el tamany
+		TTF_Font *fontExitHover{ TTF_OpenFont("../../res/ttf/saiyan.ttf",70) };						//Obrir la font amb el tamany
 		if (fontExitHover == nullptr) throw "No es pot inicialitzar TTF_Font";
 		SDL_Surface *tmpSurfExitHover{ TTF_RenderText_Blended(fontExitHover,"Exit", SDL_Color{ 100,201,170,255 }) };
 		if (tmpSurfExitHover == nullptr) throw "Unable to create the SDL teach";
 		SDL_Texture *textTextureExitHover{ SDL_CreateTextureFromSurface(m_renderer, tmpSurfExitHover) };
-		SDL_Rect textRectExitHover{ 100,250,tmpSurfExitHover->w, tmpSurfExitHover->h };									//
+		SDL_Rect textRectExitHover{ 100,250,tmpSurfExitHover->w, tmpSurfExitHover->h };				//
 		SDL_FreeSurface(tmpSurfExitHover);															//Superficie alliberada 
 		TTF_CloseFont(fontExitHover);
 
 		
 
 	// --- AUDIO ---
-
+		Mix_Music *backgroundMusic = Mix_LoadMUS("../../res/au/mainTheme.mp3");
+		//En cas d' efectes d' audio puntuals, Mix_Chunk *jumpEffect = Mix_LoadWAV("../../res/au/mainTheme.wav")
 
 	// --- VARIABLES ---
-	bool MouseInPlayButton = false;;
-	bool MouseInSoundOffButton = false;;
-	bool MouseInExitButton = false;;
-	bool MouseButtonDown = false;;
+		// --- Buttons ---
+		bool MouseInPlayButton = false;
+		bool MouseInSoundOffButton = false;
+		bool MouseInExitButton = false;
+		bool MouseButtonDown = false;
+
+		// --- Audio ---
+		
 	// --- GAME LOOP ---
 	SDL_Event event;																		//Inicialitzar els events exteriors (inputs, p.ej)
 	bool isRunning = true;																	//Boolea per correr el joc 
@@ -128,10 +141,10 @@ int main(int, char*[])
 				isRunning = false;															//Salimos del juego
 				break;
 			case SDL_KEYDOWN:																//
-				if (event.key.keysym.sym == SDLK_ESCAPE) isRunning = false; 
+				if (event.key.keysym.sym == SDLK_ESCAPE) isRunning = false;
 				break;
-			//event.key.keysym --> Teclat: SDLK_LEFT, SDLK_SPACE
-			//event.button.button --> Ratolí: SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT
+				//event.key.keysym --> Teclat: SDLK_LEFT, SDLK_SPACE
+				//event.button.button --> Ratolí: SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT
 			case SDL_MOUSEMOTION:
 				//playerRect.x = event.motion.x - playerRect.w/2;								//El kintoun sempre seguira la flecha i estara centrat
 				//playerRect.y = event.motion.y - playerRect.h/2;
@@ -141,15 +154,18 @@ int main(int, char*[])
 					event.motion.y > textRectPlay.y&& event.motion.y < textRectPlay.y + textRectPlay.h) {
 					//Hay colision con el boton Play
 					MouseInPlayButton = true;
-				}else MouseInPlayButton = false;
+				}
+				else MouseInPlayButton = false;
 				if (event.motion.x > textRectSoundOff.x&& event.motion.x < textRectSoundOff.x + textRectSoundOff.w &&
 					event.motion.y > textRectSoundOff.y&& event.motion.y < textRectSoundOff.y + textRectSoundOff.h) {
 					MouseInSoundOffButton = true;
-				}else MouseInSoundOffButton = false;
+				}
+				else MouseInSoundOffButton = false;
 				if (event.motion.x > textRectExit.x&& event.motion.x < textRectExit.x + textRectExit.w &&
 					event.motion.y > textRectExit.y&& event.motion.y < textRectExit.y + textRectExit.h) {
 					MouseInExitButton = true;
-				}else MouseInExitButton = false;
+				}
+				else MouseInExitButton = false;
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 				MouseButtonDown = true;
@@ -169,6 +185,7 @@ int main(int, char*[])
 			//Hover Button
 			if (MouseButtonDown) {
 				//ButtonClicked
+				backgroundMusicBool = true;
 			}
 		}
 		else {
@@ -178,6 +195,8 @@ int main(int, char*[])
 			//Hover Button
 			if (MouseButtonDown) {
 				//ButtonClicked
+
+
 			}
 		}
 		else {
@@ -193,6 +212,8 @@ int main(int, char*[])
 		else {
 
 		}
+	
+	
 		// DRAW
 		SDL_RenderClear(m_renderer);
 			//Background
@@ -238,6 +259,7 @@ int main(int, char*[])
 	SDL_DestroyTexture(textTextureSoundOffHover);
 	SDL_DestroyTexture(textTextureExit);
 	SDL_DestroyTexture(textTextureExitHover);
+	Mix_FreeMusic(backgroundMusic);
 	IMG_Quit();
 	TTF_Quit();
 	SDL_DestroyRenderer(m_renderer);														//Destruim el render
