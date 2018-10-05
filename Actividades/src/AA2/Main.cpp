@@ -7,9 +7,17 @@
 #include <iostream>
 #include <string>
 
+#include <time.h>								//Para calcular delta time
+
+//En casa: 10.0.16299.0
+//En la uni: 10.0.17134.0
+
 //Game general information
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
+
+const int FPS = 60;
+const int DELAY_TIME = 1000.0f/FPS;
 
 int main(int, char*[]) 
 {
@@ -39,95 +47,143 @@ int main(int, char*[])
 	if (TTF_Init() != 0) throw "No es pot inicialitzar SDL_ttf";							//Throw de la font de lletra pero... bastant inutil aqui 
 
 	//-->SDL_Mix
+	const Uint8 mixFlags(MIX_INIT_MP3 | MIX_INIT_OGG);
+	if (!(Mix_Init(mixFlags) & mixFlags)) throw "Error";
+
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);										//SDL Mixer esta inicialitzat
 
 
+	// --- TIME ---
+	clock_t lastTime = clock();
+	float timeDown = 60.;									//Ideal para realizar una cuenta atras 
+	float deltaTime = 0;
+
+	Uint8 frameStart, frameTime = 1;
+
+
+
+
+
 	// --- SPRITES ---
-		//Background
-		SDL_Texture* bgTexture{ IMG_LoadTexture(m_renderer, "../../res/img/bg.jpg") };		//Carregem la textura
-		if (bgTexture == nullptr) throw "Error: bgTexture init";							//Throw error en cas necesari 
-		SDL_Rect bgRect{ 0,0,SCREEN_WIDTH, SCREEN_HEIGHT };									//Definim la posicio i amplada i altura 
+		//Background Main Menu
+		SDL_Texture* bgTextureMainMenu{ IMG_LoadTexture(m_renderer, "../../res/img/bg.jpg") };		//Carregem la textura
+		if (bgTextureMainMenu == nullptr) throw "Error: bgTexture init";							//Throw error en cas necesari 
+		SDL_Rect bgRectMainMenu{ 0,0,SCREEN_WIDTH, SCREEN_HEIGHT };									//Definim la posicio i amplada i altura 
+
+		//Background Play
+		SDL_Texture* bgTexturePlay{ IMG_LoadTexture(m_renderer, "../../res/img/bgCastle.jpg") };		
+		if (bgTexturePlay == nullptr) throw "Error: bgTexture init";
+		SDL_Rect bgRectPlay{ 0,0,SCREEN_WIDTH, SCREEN_HEIGHT };								
 
 		//Ratolí
 		SDL_Texture* playerTexture{ IMG_LoadTexture(m_renderer, "../../res/img/kintoun.png") };
 		if (playerTexture == nullptr) throw "No s' han pogut crear les textures";
 		SDL_Rect playerRect{0,0,350,189};
+		SDL_Rect playerTarget{ 0,0,100,100 };
 	//-->Animated Sprite ---
-		SDL_Rect playerTarget{ 0,0,100,100};
+		SDL_Texture *runnerText{ IMG_LoadTexture(m_renderer, "../../res/img/sp01.png") };
+		SDL_Rect runnerRect, runnerPosition;
+		int textWidth, textHeight, frameWidth, frameHeight;
+		SDL_QueryTexture(runnerText, NULL, NULL, &textWidth,&textHeight);
+		frameWidth = textWidth / 6;								//Tallem la llargada del sprite en 6 parts
+		frameHeight = textHeight / 1;							//Tallem la altura del sprite en 1 part 
+		runnerPosition.x = runnerPosition.y = 0;				
+		runnerRect.x = runnerRect.y = 0;
+		runnerPosition.h = runnerRect.h = frameHeight;			
+		runnerPosition.w = runnerRect.w = frameWidth;
+
+
 	// --- TEXT ---
 		//No val la pena fer servir aixo en temps real (carregar les imatges no, pero mostrarles o no, es pot fer)
+
+		//Main Menu
+			//Play Button
+			TTF_Font *fontSaiyan70{ TTF_OpenFont("../../res/ttf/saiyan.ttf",70) };					//Obrir la font amb el tamany
+			if (fontSaiyan70 == nullptr) throw "No es pot inicialitzar TTF_Font";
+			SDL_Surface *tmpSurf{ TTF_RenderText_Blended(fontSaiyan70,"Play", SDL_Color{255,150,0,255}) };		//Variable per la font a carregar, el text i el color 
+			if (tmpSurf == nullptr) throw "Unable to create the SDL teach";
+			SDL_Texture *textTexturePlay{SDL_CreateTextureFromSurface(m_renderer, tmpSurf)};
+			SDL_Rect textRectPlay{100,50,tmpSurf->w, tmpSurf->h };		
+		
+			//Hover Play 
+			tmpSurf = { TTF_RenderText_Blended(fontSaiyan70, "Play", SDL_Color{ 100,201,170,255 }) };
+			SDL_Texture *textTexturePlayHover{ SDL_CreateTextureFromSurface(m_renderer, tmpSurf) };
+			SDL_Rect textRectPlayHover{ 100,50,tmpSurf->w, tmpSurf->h };
+		
+
+			//Sound off
+			tmpSurf = { TTF_RenderText_Blended(fontSaiyan70,"Sound off", SDL_Color{ 255,150,0,255 }) };
+			SDL_Texture *textTextureSoundOff{ SDL_CreateTextureFromSurface(m_renderer, tmpSurf) };
+			SDL_Rect textRectSoundOff{ 100,150,tmpSurf->w, tmpSurf->h };
+
+			//Sound off Hover
+			tmpSurf = { TTF_RenderText_Blended(fontSaiyan70,"Sound off", SDL_Color{ 100,201,170,255 }) };
+			SDL_Texture *textTextureSoundOffHover{ SDL_CreateTextureFromSurface(m_renderer, tmpSurf) };
+			SDL_Rect textRectSoundOffHover{ 100,150,tmpSurf->w, tmpSurf->h };
+
+			//Sound On
+			tmpSurf = { TTF_RenderText_Blended(fontSaiyan70,"Sound on", SDL_Color{ 255,150,0,255 }) };
+			SDL_Texture *textTextureSoundOn{ SDL_CreateTextureFromSurface(m_renderer, tmpSurf) };
+			SDL_Rect textRectSoundOn{ 100,150,tmpSurf->w, tmpSurf->h };
+
+			//Sound On Hover
+			tmpSurf = { TTF_RenderText_Blended(fontSaiyan70,"Sound On", SDL_Color{ 100,201,170,255 }) };
+			SDL_Texture *textTextureSoundOnHover{ SDL_CreateTextureFromSurface(m_renderer, tmpSurf) };
+			SDL_Rect textRectSoundOnHover{ 100,150,tmpSurf->w, tmpSurf->h };
+
+			//Exit
+			tmpSurf = { TTF_RenderText_Blended(fontSaiyan70,"Exit", SDL_Color{ 255,150,0,255 }) };
+			SDL_Texture *textTextureExit{ SDL_CreateTextureFromSurface(m_renderer, tmpSurf) };
+			SDL_Rect textRectExit{ 100,250,tmpSurf->w, tmpSurf->h };									//
+
+			//Exit Hover
+			tmpSurf = { TTF_RenderText_Blended(fontSaiyan70,"Exit", SDL_Color{ 100,201,170,255 }) };
+			SDL_Texture *textTextureExitHover{ SDL_CreateTextureFromSurface(m_renderer, tmpSurf) };
+			SDL_Rect textRectExitHover{ 100,250,tmpSurf->w, tmpSurf->h };			
+
 		//Play
-		TTF_Font *fontPlay{ TTF_OpenFont("../../res/ttf/saiyan.ttf",70) };					//Obrir la font amb el tamany
-		if (fontPlay == nullptr) throw "No es pot inicialitzar TTF_Font";
-		SDL_Surface *tmpSurfPlay{ TTF_RenderText_Blended(fontPlay,"Play", SDL_Color{255,150,0,255}) };		//Variable per la font a carregar, el text i el color 
-		if (tmpSurfPlay == nullptr) throw "Unable to create the SDL teach";
-		SDL_Texture *textTexturePlay{SDL_CreateTextureFromSurface(m_renderer, tmpSurfPlay)};
-		SDL_Rect textRectPlay{100,50,tmpSurfPlay->w, tmpSurfPlay->h };									//
-		SDL_FreeSurface(tmpSurfPlay);															//Amb la surface alliberada, podem aprofitar la mateixa Surface per fer un altre text i no fer mes variables
-		TTF_CloseFont(fontPlay);
+			TTF_Font *fontSaiyan40{ TTF_OpenFont("../../res/ttf/saiyan.ttf",40) };					//Obrir la font amb el tamany
+			if (fontSaiyan40 == nullptr) throw "No es pot inicialitzar TTF_Font";
+			tmpSurf = { TTF_RenderText_Blended(fontSaiyan40,"PlayerOne", SDL_Color{0,0,0,255}) };			//Variable per la font a carregar, el text i el color 
+			if (tmpSurf == nullptr) throw "Unable to create the SDL teach";
+			SDL_Texture *textTexturePlayer1{ SDL_CreateTextureFromSurface(m_renderer, tmpSurf) };
+			SDL_Rect textRectPlayer1{ 20,20,tmpSurf->w, tmpSurf->h };
 
-		//Hover Play 
-		TTF_Font *fontPlayHover{ TTF_OpenFont("../../res/ttf/saiyan.ttf",70) };					//Obrir la font amb el tamany
-		if (fontPlayHover == nullptr) throw "No es pot inicialitzar TTF_Font";
-		SDL_Surface *tmpSurfPlayHover = { TTF_RenderText_Blended(fontPlayHover, "Play", SDL_Color{ 100,201,170,255 }) };
-		SDL_Texture *textTexturePlayHover{ SDL_CreateTextureFromSurface(m_renderer, tmpSurfPlayHover) };
-		SDL_Rect textRectPlayHover{ 100,50,tmpSurfPlayHover->w, tmpSurfPlayHover->h };
-		SDL_FreeSurface(tmpSurfPlayHover);
-		TTF_CloseFont(fontPlayHover);
+			tmpSurf = { TTF_RenderText_Blended(fontSaiyan40,"PlayerTwo", SDL_Color{ 0,0,0,255 }) };
+			SDL_Texture *textTexturePlayer2{ SDL_CreateTextureFromSurface(m_renderer, tmpSurf) };
+			SDL_Rect textRectPlayer2{ 20,70,tmpSurf->w, tmpSurf->h };
 
-		//Sound off
-		TTF_Font *fontSoundOff{ TTF_OpenFont("../../res/ttf/saiyan.ttf",70) };					//Obrir la font amb el tamany
-		if (fontSoundOff == nullptr) throw "No es pot inicialitzar TTF_Font";
-		SDL_Surface *tmpSurfSoundOff{ TTF_RenderText_Blended(fontSoundOff,"Sound off", SDL_Color{ 255,150,0,255 }) };
-		if (tmpSurfSoundOff == nullptr) throw "Unable to create the SDL teach";
-		SDL_Texture *textTextureSoundOff{ SDL_CreateTextureFromSurface(m_renderer, tmpSurfSoundOff) };
-		SDL_Rect textRectSoundOff{ 100,150,tmpSurfSoundOff->w, tmpSurfSoundOff->h };									//
-		SDL_FreeSurface(tmpSurfSoundOff);															//Superficie alliberada 
-		TTF_CloseFont(fontSoundOff);
-
-		//Sound off Hover
-		TTF_Font *fontSoundOffHover{ TTF_OpenFont("../../res/ttf/saiyan.ttf",70) };					//Obrir la font amb el tamany
-		if (fontSoundOffHover == nullptr) throw "No es pot inicialitzar TTF_Font";
-		SDL_Surface *tmpSurfSoundOffHover{ TTF_RenderText_Blended(fontSoundOffHover,"Sound off", SDL_Color{ 100,201,170,255 }) };
-		if (tmpSurfSoundOffHover == nullptr) throw "Unable to create the SDL teach";
-		SDL_Texture *textTextureSoundOffHover{ SDL_CreateTextureFromSurface(m_renderer, tmpSurfSoundOffHover) };
-		SDL_Rect textRectSoundOffHover{ 100,150,tmpSurfSoundOffHover->w, tmpSurfSoundOffHover->h };									//
-		SDL_FreeSurface(tmpSurfSoundOffHover);															//Superficie alliberada 
-		TTF_CloseFont(fontSoundOffHover);
-
-		//Exit
-		TTF_Font *fontExit{ TTF_OpenFont("../../res/ttf/saiyan.ttf",70) };					//Obrir la font amb el tamany
-		if (fontExit == nullptr) throw "No es pot inicialitzar TTF_Font";
-		SDL_Surface *tmpSurfExit{ TTF_RenderText_Blended(fontExit,"Exit", SDL_Color{ 255,150,0,255 }) };
-		if (tmpSurfExit == nullptr) throw "Unable to create the SDL teach";
-		SDL_Texture *textTextureExit{ SDL_CreateTextureFromSurface(m_renderer, tmpSurfExit) };
-		SDL_Rect textRectExit{ 100,250,tmpSurfExit->w, tmpSurfExit->h };									//
-		SDL_FreeSurface(tmpSurfExit);															//Superficie alliberada 
-		TTF_CloseFont(fontExit);
-
-		//Exit Hover
-		TTF_Font *fontExitHover{ TTF_OpenFont("../../res/ttf/saiyan.ttf",70) };						//Obrir la font amb el tamany
-		if (fontExitHover == nullptr) throw "No es pot inicialitzar TTF_Font";
-		SDL_Surface *tmpSurfExitHover{ TTF_RenderText_Blended(fontExitHover,"Exit", SDL_Color{ 100,201,170,255 }) };
-		if (tmpSurfExitHover == nullptr) throw "Unable to create the SDL teach";
-		SDL_Texture *textTextureExitHover{ SDL_CreateTextureFromSurface(m_renderer, tmpSurfExitHover) };
-		SDL_Rect textRectExitHover{ 100,250,tmpSurfExitHover->w, tmpSurfExitHover->h };				//
-		SDL_FreeSurface(tmpSurfExitHover);															//Superficie alliberada 
-		TTF_CloseFont(fontExitHover);
+		SDL_FreeSurface(tmpSurf);																	//Superficie alliberada 
+		TTF_CloseFont(fontSaiyan70);
 
 		
 
 	// --- AUDIO ---
+		if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024) == -1) {
+			//Frequencia: Sortida de la frequencia
+			//Format: Format de sortida
+			//Canals: 2 per estereo, 1 per a mono
+			//Chunksize: bytes utlitzats per mostra de sortida 
+			throw "Unable to init SDL_Mixer";
+		}
+		Mix_Music *soundtrack{ Mix_LoadMUS("../../res/au/mainTheme.mp3") };
+		if (!soundtrack) throw "Unable to load Mix_Music soundtrack";
+		Mix_VolumeMusic(MIX_MAX_VOLUME / 2);
+		Mix_PlayMusic(soundtrack, -1);
+
 		Mix_Music *backgroundMusic = Mix_LoadMUS("../../res/au/mainTheme.mp3");
 		//En cas d' efectes d' audio puntuals, Mix_Chunk *jumpEffect = Mix_LoadWAV("../../res/au/mainTheme.wav")
 
 	// --- VARIABLES ---
 		// --- Buttons ---
 		bool MouseInPlayButton = false;
-		bool MouseInSoundOffButton = false;
+		bool MouseInSoundButton = false;
 		bool MouseInExitButton = false;
 		bool MouseButtonDown = false;
 
+		bool MusicOn = true;
+		int Scene = 0;						//0: Menu	1: Play 
+	
 		// --- Audio ---
 		
 	// --- GAME LOOP ---
@@ -150,22 +206,6 @@ int main(int, char*[])
 				//playerRect.y = event.motion.y - playerRect.h/2;
 				playerTarget.x = event.motion.x - playerRect.w / 2;
 				playerTarget.y = event.motion.y - playerRect.h / 2;
-				if (event.motion.x > textRectPlay.x&& event.motion.x < textRectPlay.x + textRectPlay.w &&
-					event.motion.y > textRectPlay.y&& event.motion.y < textRectPlay.y + textRectPlay.h) {
-					//Hay colision con el boton Play
-					MouseInPlayButton = true;
-				}
-				else MouseInPlayButton = false;
-				if (event.motion.x > textRectSoundOff.x&& event.motion.x < textRectSoundOff.x + textRectSoundOff.w &&
-					event.motion.y > textRectSoundOff.y&& event.motion.y < textRectSoundOff.y + textRectSoundOff.h) {
-					MouseInSoundOffButton = true;
-				}
-				else MouseInSoundOffButton = false;
-				if (event.motion.x > textRectExit.x&& event.motion.x < textRectExit.x + textRectExit.w &&
-					event.motion.y > textRectExit.y&& event.motion.y < textRectExit.y + textRectExit.h) {
-					MouseInExitButton = true;
-				}
-				else MouseInExitButton = false;
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 				MouseButtonDown = true;
@@ -178,46 +218,83 @@ int main(int, char*[])
 		}
 
 		// UPDATE			//Aqui es donde se aplica toda la logica
+
+		frameStart = SDL_GetTicks();
+		
+		//Movimiento del ratón
 		playerRect.x += (playerTarget.x - playerRect.x) / 10;
 		playerRect.y += (playerTarget.y - playerRect.y) / 10;
-		//Collisons with buttons
-		if (MouseInPlayButton) {
-			//Hover Button
-			if (MouseButtonDown) {
-				//ButtonClicked
-				backgroundMusicBool = true;
+
+
+		frameTime++;
+		deltaTime = (clock() - lastTime);
+		lastTime = clock();
+		deltaTime /= CLOCKS_PER_SEC;
+		timeDown -= deltaTime;
+		std::cout << timeDown << std::endl;			//Tiempo actual;
+		
+
+		
+		
+		if (FPS / frameTime <= 9) {
+			frameTime = 0;
+			runnerRect.x += frameWidth;
+			if (runnerRect.x >= textWidth) {
+				runnerRect.x = 0;
 			}
 		}
-		else {
-			//Unhover button
-		}
-		if (MouseInSoundOffButton) {
-			//Hover Button
+
+
+		if (event.motion.x > textRectPlay.x&& event.motion.x < textRectPlay.x + textRectPlay.w &&
+			event.motion.y > textRectPlay.y&& event.motion.y < textRectPlay.y + textRectPlay.h) {
+			MouseInPlayButton = true;
 			if (MouseButtonDown) {
-				//ButtonClicked
-
-
+				//Cambi d' escena
+				Scene = 1;
 			}
 		}
-		else {
+		else MouseInPlayButton = false;
 
+		if (event.motion.x > textRectSoundOff.x&& event.motion.x < textRectSoundOff.x + textRectSoundOff.w &&
+			event.motion.y > textRectSoundOff.y&& event.motion.y < textRectSoundOff.y + textRectSoundOff.h) {
+			if (MusicOn) {
+				MouseInSoundButton = true;
+				if (MouseButtonDown) {
+					Mix_CloseAudio();
+					MusicOn = false;
+				}
+			}
+			else {
+				MouseInSoundButton = true;
+				if (MouseButtonDown) {
+					Mix_PlayMusic(backgroundMusic, -1);
+					MusicOn = true;
+				}
+			}
+			
+			
 		}
-		if (MouseInExitButton) {
-			//Hover Button
+		else MouseInSoundButton = false;
+
+		if (event.motion.x > textRectExit.x&& event.motion.x < textRectExit.x + textRectExit.w &&
+			event.motion.y > textRectExit.y&& event.motion.y < textRectExit.y + textRectExit.h) {
+			MouseInExitButton = true;
 			if (MouseButtonDown) {
-				//ButtonClicked
 				isRunning = false;
 			}
 		}
-		else {
+		else MouseInExitButton = false;
 
-		}
+		
+
+			
 	
 	
 		// DRAW
 		SDL_RenderClear(m_renderer);
+		if (Scene == 0) {
 			//Background
-			SDL_RenderCopy(m_renderer, bgTexture, nullptr, &bgRect);
+			SDL_RenderCopy(m_renderer, bgTextureMainMenu, nullptr, &bgRectMainMenu);
 			//Player Cursor 
 			SDL_RenderCopy(m_renderer, playerTexture, nullptr, &playerRect);
 			if (!MouseInPlayButton) {		//Text Play	
@@ -227,12 +304,21 @@ int main(int, char*[])
 				SDL_RenderCopy(m_renderer, textTexturePlayHover, nullptr, &textRectPlayHover);
 			}
 
-			if (!MouseInSoundOffButton) {	//Text Sound off
-				SDL_RenderCopy(m_renderer, textTextureSoundOff, nullptr, &textRectSoundOff);
+			if (MusicOn) {
+				if (!MouseInSoundButton) {	//Text Sound off
+					SDL_RenderCopy(m_renderer, textTextureSoundOff, nullptr, &textRectSoundOff);
+				}
+				else {							//Text Sound off Hover
+					SDL_RenderCopy(m_renderer, textTextureSoundOffHover, nullptr, &textRectSoundOffHover);
+				}
 			}
-			else {							//Text Sound off Hover
-				SDL_RenderCopy(m_renderer, textTextureSoundOffHover, nullptr, &textRectSoundOffHover);
-			}
+			else
+				if (!MouseInSoundButton) {	//Text Sound off
+					SDL_RenderCopy(m_renderer, textTextureSoundOn, nullptr, &textRectSoundOn);
+				}
+				else {							//Text Sound off Hover
+					SDL_RenderCopy(m_renderer, textTextureSoundOnHover, nullptr, &textRectSoundOnHover);
+				}
 
 			if (!MouseInExitButton) {		//Text Exit
 				SDL_RenderCopy(m_renderer, textTextureExit, nullptr, &textRectExit);
@@ -240,6 +326,19 @@ int main(int, char*[])
 			else {							//Text Exit Hover
 				SDL_RenderCopy(m_renderer, textTextureExitHover, nullptr, &textRectExitHover);
 			}
+
+			SDL_RenderCopy(m_renderer, runnerText, &runnerRect, &runnerPosition);
+		}
+		else if (Scene == 1) {
+			//Background
+			SDL_RenderCopy(m_renderer, bgTexturePlay, nullptr, &bgRectPlay);
+
+			//Player1 Texto
+			SDL_RenderCopy(m_renderer, textTexturePlayer1, nullptr, &textRectPlayer1);
+
+			//Player2 Texto
+			SDL_RenderCopy(m_renderer, textTexturePlayer2, nullptr, &textRectPlayer2);
+		}
 				
 
 				
@@ -248,10 +347,15 @@ int main(int, char*[])
 
 		SDL_RenderPresent(m_renderer);
 
+		frameTime = SDL_GetTicks() - frameStart;
+		if (frameTime < DELAY_TIME) {
+			SDL_Delay((int)(DELAY_TIME - frameTime));
+		}
+
 	}																						//Sortim de IsRunning = Sortir del joc 
 
 	// --- DESTROY ---
-	SDL_DestroyTexture(bgTexture);															//Destruim imatges
+	SDL_DestroyTexture(bgTextureMainMenu);															//Destruim imatges
 	SDL_DestroyTexture(playerTexture);
 	SDL_DestroyTexture(textTexturePlay);
 	SDL_DestroyTexture(textTexturePlayHover);
@@ -259,7 +363,10 @@ int main(int, char*[])
 	SDL_DestroyTexture(textTextureSoundOffHover);
 	SDL_DestroyTexture(textTextureExit);
 	SDL_DestroyTexture(textTextureExitHover);
+
+	SDL_DestroyTexture(bgTexturePlay);
 	Mix_FreeMusic(backgroundMusic);
+	Mix_Quit();
 	IMG_Quit();
 	TTF_Quit();
 	SDL_DestroyRenderer(m_renderer);														//Destruim el render
